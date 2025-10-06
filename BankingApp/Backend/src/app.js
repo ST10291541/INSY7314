@@ -16,23 +16,66 @@ dotenv.config();
 // Create an instance of an Express application
 const app = express();
 
-// Apply Helmet middleware to secure the app by setting HTTP headers (e.g., XSS, frameguard, HSTS)
+// Security middlewares
 app.use(helmet());
+app.use(cors({
+  origin: "https://localhost:5173",
+  credentials: true
+}));
+app.use(express.json()); // Parse JSON bodies
 
-// Enable CORS so that requests from other origins (like the frontend) are allowed
-app.use(cors());
+// Routes
+const authRoutes = require("./routes/authRoutes");
+const { protect } = require("./middleware/authMiddleware");
 
-// Enable Express to parse incoming JSON payloads (used in POST and PUT requests)
-app.use(express.json());
+app.use("/api/auth", authRoutes);
 
-// Define a simple route at the root URL to confirm the server is running
-app.get('/', (req, res) => {
-  res.send('Secure Blog API running!');
+// ✅ ADD THESE MISSING ROUTES:
+
+// Root API route - fixes "Cannot GET /api"
+app.get("/api", (req, res) => {
+  res.json({
+    message: "Banking API Server is running! 🚀",
+    timestamp: new Date(),
+    endpoints: {
+      auth: "/api/auth",
+      protected: "/api/protected",
+      health: "/api/health"
+    }
+  });
 });
 
-app.get('/test', (req, res) => {
-  res.json({ message: 'This is Secure Blog JSON response' });
+// Health check route
+app.get("/api/health", (req, res) => {
+  res.json({
+    message: "Server is healthy ✅",
+    status: "operational",
+    timestamp: new Date()
+  });
 });
+
+// Test protected route (to verify RBAC is working)
+app.get("/api/protected", protect, (req, res) => {
+  res.json({
+    message: `Welcome, user ${req.user.id}!`,
+    user: req.user,
+    role: req.user.role,
+    timestamp: new Date()
+  });
+});
+
+// Test admin-only route
+app.get("/api/admin-only", protect, (req, res, next) => {
+  // Inline requireRole for testing
+  if (!req.user) return res.status(401).json({ message: "Authentication required" });
+  if (req.user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
+  
+  res.json({
+    message: "Admin access granted!",
+    user: req.user
+  });
+});
+
 
 // Export the app so it can be used in server.js
 module.exports = app;
