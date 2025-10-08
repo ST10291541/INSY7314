@@ -1,18 +1,26 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User"); // make sure path is correct
 
-const protect = (req, res, next) => {
+const protect = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const token = authHeader.split(" ")[1];
+
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach user info to request
+
+    // Fetch full user info from DB
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    req.user = user; // Attach full user object
     next();
   } catch (err) {
-    res.status(403).json({ message: "Token invalid or expired" });
+    console.error(err);
+    res.status(401).json({ message: "Token invalid or expired" });
   }
 };
 

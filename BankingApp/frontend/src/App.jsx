@@ -8,6 +8,9 @@ import Register from "./pages/Register";
 import CustomerPortal from "./pages/CustomerPortal";
 import EmployeePortal from "./pages/EmployeePortal";
 import Logout from "./pages/Logout";
+import PaymentPage from "./pages/PaymentPage";
+import MyPayments from './pages/MyPayments';
+import PaymentDetails from './pages/PaymentDetails';
 import './App.css';
 
 function App() {
@@ -15,13 +18,13 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          {/* Public routes */}
+          {/* Public */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout />} />
 
-          {/* Protected customer routes */}
+          {/* Customer */}
           <Route 
             path="/customer-portal" 
             element={
@@ -30,18 +33,39 @@ function App() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/make-payment" 
+            element={
+              <ProtectedRoute requiredRole="customer">
+                <PaymentPage />
+              </ProtectedRoute>
+            } 
+          />
 
-          {/* Protected employee routes */}
+          {/*Customer routes*/}
+          <Route path="/my-payments" element={
+            <ProtectedRoute requiredRole="customer">
+              <MyPayments />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/payments/:id" element={
+            <ProtectedRoute requiredRole="customer">
+              <PaymentDetails />
+            </ProtectedRoute>
+          } />
+
+          {/* Employee/Admin */}
           <Route 
             path="/employee-portal" 
             element={
-              <ProtectedRoute requiredRole={['employee', 'admin']}>
+              <ProtectedRoute requiredRole={['employee','admin']}>
                 <EmployeePortal />
               </ProtectedRoute>
             } 
           />
 
-          {/* Fallback route */}
+          {/* Fallback */}
           <Route path="*" element={<div>Page not found</div>} />
         </Routes>
       </Layout>

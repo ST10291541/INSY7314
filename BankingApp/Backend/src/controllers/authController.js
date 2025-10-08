@@ -10,7 +10,7 @@ const generateToken = (user) =>
       accountNumber: user.accountNumber
     },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "24h" }
   );
 
 // ✅ HARDCODED EMPLOYEE CREDENTIALS (No admin needed)

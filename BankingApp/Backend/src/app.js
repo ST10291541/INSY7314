@@ -26,11 +26,11 @@ app.use(express.json()); // Parse JSON bodies
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 const { protect } = require("./middleware/authMiddleware");
 
 app.use("/api/auth", authRoutes);
-
-// ✅ ADD THESE MISSING ROUTES:
+app.use("/api/payments", paymentRoutes);
 
 // Root API route - fixes "Cannot GET /api"
 app.get("/api", (req, res) => {
