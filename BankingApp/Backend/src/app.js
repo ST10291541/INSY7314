@@ -74,7 +74,7 @@ app.get("/api/protected", protect, (req, res) => {
 });
 
 // Test admin-only route
-app.get("/api/admin-only", protect, (req, res, next) => {
+app.get("/api/admin-only", protect, (req, res, _next) => {
   // Inline requireRole for testing
   if (!req.user) return res.status(401).json({ message: "Authentication required" });
   if (req.user.role !== "admin") return res.status(403).json({ message: "Admin access required" });

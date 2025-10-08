@@ -58,7 +58,7 @@ exports.registerCustomer = async (req, res) => {
 // Login for both customers and employees
 exports.login = async (req, res) => {
   try {
-    const { email, password, username, login } = req.body;
+    const { email, password, login } = req.body;
     
     const userIdentifier = email || login;
     
@@ -97,7 +97,7 @@ exports.login = async (req, res) => {
         accountNumber: user.accountNumber 
       }
     });
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Server error" });
   }
 };
