@@ -10,11 +10,17 @@ const helmet = require('helmet');
 // Import dotenv to load environment variables from a .env file into process.env
 const dotenv = require('dotenv');
 
+// RATE LIMITING IMPORTS
+const { apiLimiter } = require('./middleware/rateLimiter');
+
 // Load environment variables (e.g., PORT, DB URI)
 dotenv.config();
 
 // Create an instance of an Express application
 const app = express();
+
+// TRUST PROXY FOR RATE LIMITING
+app.set('trust proxy', 1);
 
 // Security middlewares
 app.use(helmet());
@@ -23,6 +29,9 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json()); // Parse JSON bodies
+
+// APPLY GENERAL API RATE LIMITING
+app.use('/api/', apiLimiter);
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
