@@ -1,0 +1,56 @@
+.my-payments-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.my-payments-container h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.my-payments-container ul {
+  list-style: none;
+  padding: 0;
+}
+
+.my-payments-container li {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.my-payments-container li:hover {
+  background: #f0f0f0;
+}
+
+/* New styles for customer and payee info */
+.payment-summary {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.payment-summary div {
+  flex: 1 1 45%;
+  padding: 0.5rem 0;
+}
+
+.payment-summary h4 {
+  margin: 0 0 0.5rem 0;
+  color: #667eea;
+}
+
+.payment-summary p {
+  margin: 0.25rem 0;
+}
+
+.status.pending { color: orange; font-weight: bold; }
+.status.verified { color: blue; font-weight: bold; }
+.status.completed { color: green; font-weight: bold; }
+.status.rejected { color: red; font-weight: bold; }

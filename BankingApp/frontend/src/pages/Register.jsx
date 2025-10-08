@@ -37,8 +37,12 @@ const Register = () => {
     try {
       const response = await API.post('/auth/register', formData);
       
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem("token", response.data.token);
+      //localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem('user', JSON.stringify({ 
+        ...response.data.user, 
+        token: response.data.token 
+      }));
       
       navigate('/customer-portal');
     } catch (err) {

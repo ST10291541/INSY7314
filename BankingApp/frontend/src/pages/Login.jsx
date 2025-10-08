@@ -39,8 +39,12 @@ const Login = () => {
       });
 
       // Save token and user data
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem("token", response.data.token);
+      //localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem('user', JSON.stringify({ 
+        ...response.data.user, 
+        token: response.data.token 
+      }));
       
       // Redirect based on role
       if (response.data.user.role === 'employee' || response.data.user.role === 'admin') {

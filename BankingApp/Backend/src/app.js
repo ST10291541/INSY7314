@@ -1,23 +1,33 @@
-// Import the Express framework to build the web server
+// app.js
 const express = require('express');
-
-// Import CORS middleware to allow cross-origin requests (e.g., React frontend calling Express backend)
 const cors = require('cors');
-
-// Import Helmet to set various secure HTTP headers automatically
 const helmet = require('helmet');
+require('dotenv').config();
 
-// Import dotenv to load environment variables from a .env file into process.env
-const dotenv = require('dotenv');
+// RATE LIMITING IMPORT
+const { apiLimiter } = require('./middleware/rateLimiter');
 
-// Load environment variables (e.g., PORT, DB URI)
-dotenv.config();
-
-// Create an instance of an Express application
+// Create Express app
 const app = express();
 
+<<<<<<< HEAD
 // 1️⃣ Parse JSON and CSP reports sent by the browser
 app.use(express.json({ type: ['application/json', 'application/csp-report'] }));
+=======
+// TRUST PROXY for rate limiting (important if behind reverse proxy)
+app.set('trust proxy', 1);
+
+// Security middlewares
+app.use(helmet());
+app.use(cors({
+  origin: "*", // Allow all origins inside container; restrict via LB if needed
+  credentials: true
+}));
+app.use(express.json());
+
+// Apply general API rate limiting
+app.use('/api/', apiLimiter);
+>>>>>>> upstream
 
 // 2️⃣ Apply Helmet for baseline security headers
 app.use(helmet());
@@ -60,13 +70,18 @@ app.use(
 
 // 6️⃣ Import your auth routes and middleware
 const authRoutes = require("./routes/authRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 const { protect } = require("./middleware/authMiddleware");
 
 // Auth routes
 app.use("/api/auth", authRoutes);
+app.use("/api/payments", paymentRoutes);
 
+<<<<<<< HEAD
 // ✅ ADDITIONAL ROUTES
 
+=======
+>>>>>>> upstream
 // Root API route
 app.get("/api", (req, res) => {
   res.json({
@@ -75,21 +90,24 @@ app.get("/api", (req, res) => {
     endpoints: {
       auth: "/api/auth",
       protected: "/api/protected",
-      health: "/api/health"
+      health: "/health"
     }
   });
 });
 
-// Health check route
-app.get("/api/health", (req, res) => {
+// Health check route for Docker
+app.get("/health", (req, res) => {
   res.json({
-    message: "Server is healthy ✅",
     status: "operational",
     timestamp: new Date()
   });
 });
 
+<<<<<<< HEAD
 // Test protected route (verify RBAC)
+=======
+// Test protected route
+>>>>>>> upstream
 app.get("/api/protected", protect, (req, res) => {
   res.json({
     message: `Welcome, user ${req.user.id}!`,
@@ -99,7 +117,11 @@ app.get("/api/protected", protect, (req, res) => {
   });
 });
 
+<<<<<<< HEAD
 // Admin-only route
+=======
+// Test admin-only route
+>>>>>>> upstream
 app.get("/api/admin-only", protect, (req, res) => {
   if (!req.user) return res.status(401).json({ message: "Authentication required" });
   if (req.user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
@@ -110,5 +132,9 @@ app.get("/api/admin-only", protect, (req, res) => {
   });
 });
 
+<<<<<<< HEAD
 // Export app for server.js
 module.exports = app;
+=======
+module.exports = app;
+>>>>>>> upstream

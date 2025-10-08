@@ -2,6 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
+  // Check if a user is logged in
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+
   return (
     <div className="home-container">
       <div className="hero-section">
@@ -9,12 +12,17 @@ const Home = () => {
         <p>Secure international payments made simple</p>
         
         <div className="cta-buttons">
-          <Link to="/register" className="btn btn-primary">
-            Open Account
-          </Link>
-          <Link to="/login" className="btn btn-secondary">
-            Customer Login
-          </Link>
+          {/* Only show buttons if no user is logged in */}
+          {!user && (
+            <>
+              <Link to="/register" className="btn btn-primary">
+                Open Account
+              </Link>
+              <Link to="/login" className="btn btn-secondary">
+                Customer Login
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
