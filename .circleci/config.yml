@@ -22,10 +22,12 @@ jobs:
             - node-deps-{{ checksum "Backend/package-lock.json" }}
             - node-deps-
 
-      # --- Install dependencies ---
+      # --- Install Dependencies (with verbose logging) ---
       - run:
-          name: Install Dependencies
-          command: cd Backend && npm ci
+          name: Install Dependencies (with verbose logging)
+          command: |
+            cd Backend
+            npm ci --verbose
 
       # --- Save cache ---
       - save_cache:
@@ -52,9 +54,9 @@ jobs:
             cd Backend
             docker build -t bankingapp-api .
             docker image ls
+
 workflows:
   version: 2
   ci-pipeline:
     jobs:
       - build-and-test
-
