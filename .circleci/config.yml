@@ -45,10 +45,12 @@ jobs:
             test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
             echo "Env OK"
 
+      # ESLint fix applied here
       - run:
           name: Run ESLint
           command: |
             cd BankingApp/Backend
+            chmod +x ./node_modules/.bin/* || true
             npx eslint .
 
       - run:
