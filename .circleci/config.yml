@@ -21,26 +21,22 @@ jobs:
     steps:
       - checkout
 
-      # Restore npm cache from Backend
       - restore_cache:
           keys:
             - v1-npm-backend-{{ checksum "BankingApp/Backend/package-lock.json" }}
             - v1-npm-backend-
 
-      # Install dependencies
       - run:
           name: Install dependencies
           command: |
             cd BankingApp/Backend
             npm ci
 
-      # Save npm cache
       - save_cache:
           key: v1-npm-backend-{{ checksum "BankingApp/Backend/package-lock.json" }}
           paths:
             - ~/.npm
 
-      # Sanity check environment variables
       - run:
           name: Sanity check required env
           command: |
@@ -49,14 +45,12 @@ jobs:
             test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
             echo "Env OK"
 
-      # Run ESLint
       - run:
           name: Run ESLint
           command: |
             cd BankingApp/Backend
-            npm run lint
+            npx eslint .
 
-      # Run tests
       - run:
           name: Run tests
           command: |
@@ -73,7 +67,6 @@ jobs:
       - checkout
       - setup_remote_docker
 
-      # Build Docker image
       - run:
           name: Build Docker image
           command: |
@@ -81,7 +74,6 @@ jobs:
             IMAGE_NAME="${IMAGE_NAME:-bankingapp-backend}"
             docker build -t "$IMAGE_NAME:$CIRCLE_SHA1" .
 
-      # Run container and wait for healthy
       - run:
           name: Run container and wait for healthy
           command: |
@@ -108,7 +100,6 @@ jobs:
               exit 1
             }
 
-      # Cleanup container
       - run:
           name: Cleanup
           when: always
