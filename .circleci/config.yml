@@ -14,6 +14,10 @@ executors:
 jobs:
   lint_and_test:
     executor: node_executor
+    environment:
+      PORT: 5000
+      MONGO_URI: "mongodb+srv://st10248479:UPCgc0mCE17gX4zy@cluster0.bwpu2sh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+      JWT_SECRET: "supersecretjwtkey"
     steps:
       - checkout
 
@@ -40,6 +44,7 @@ jobs:
       - run:
           name: Sanity check required env
           command: |
+            cd BankingApp/Backend
             test -n "$MONGO_URI" || { echo "MONGO_URI is NOT set"; exit 1; }
             test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
             echo "Env OK"
@@ -60,6 +65,10 @@ jobs:
 
   docker_build_and_healthcheck:
     executor: base_docker
+    environment:
+      PORT: 5000
+      MONGO_URI: "mongodb+srv://st10248479:UPCgc0mCE17gX4zy@cluster0.bwpu2sh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+      JWT_SECRET: "supersecretjwtkey"
     steps:
       - checkout
       - setup_remote_docker
@@ -72,18 +81,16 @@ jobs:
             IMAGE_NAME="${IMAGE_NAME:-bankingapp-backend}"
             docker build -t "$IMAGE_NAME:$CIRCLE_SHA1" .
 
-      # Run container and wait for health
+      # Run container and wait for healthy
       - run:
           name: Run container and wait for healthy
           command: |
             IMAGE_NAME="${IMAGE_NAME:-bankingapp-backend}"
-            test -n "$MONGO_URI" || { echo "MONGO_URI is NOT set"; exit 1; }
-            test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
 
             docker run -d --name bankingapp \
               -e NODE_ENV=production \
-              -e PORT=3000 \
-              -e MONGO_URI="$DB_URL" \
+              -e PORT="$PORT" \
+              -e MONGO_URI="$MONGO_URI" \
               -e JWT_SECRET="$JWT_SECRET" \
               "$IMAGE_NAME:$CIRCLE_SHA1"
 
