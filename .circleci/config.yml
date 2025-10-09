@@ -1,0 +1,60 @@
+version: 2.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/node:22.8  # Node 22 LTS image
+    steps:
+      - checkout
+
+      # --- Show folder structure (helpful for debugging if needed) ---
+      - run:
+          name: Show repo structure
+          command: |
+            pwd
+            ls -la
+            echo "---- Backend dir ----"
+            ls -la Backend || true
+
+      # --- Restore cache ---
+      - restore_cache:
+          keys:
+            - node-deps-{{ checksum "Backend/package-lock.json" }}
+            - node-deps-
+
+      # --- Install dependencies ---
+      - run:
+          name: Install Dependencies
+          command: cd Backend && npm ci
+
+      # --- Save cache ---
+      - save_cache:
+          key: node-deps-{{ checksum "Backend/package-lock.json" }}
+          paths:
+            - ~/.npm
+
+      # --- Lint code ---
+      - run:
+          name: Run ESLint
+          command: cd Backend && npx eslint . --ext .js,.jsx,.ts,.tsx || true
+
+      # --- Run tests ---
+      - run:
+          name: Run Jest Tests
+          command: cd Backend && npm test -- --ci --reporters=default
+
+      # --- Build Docker image ---
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build Docker Image
+          command: |
+            cd Backend
+            docker build -t bankingapp-api .
+            docker image ls
+workflows:
+  version: 2
+  ci-pipeline:
+    jobs:
+      - build-and-test
+
