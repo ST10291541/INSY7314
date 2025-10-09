@@ -10,10 +10,9 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 // Create Express app
 const app = express();
 
-<<<<<<< HEAD
 // 1️⃣ Parse JSON and CSP reports sent by the browser
 app.use(express.json({ type: ['application/json', 'application/csp-report'] }));
-=======
+
 // TRUST PROXY for rate limiting (important if behind reverse proxy)
 app.set('trust proxy', 1);
 
@@ -27,7 +26,7 @@ app.use(express.json());
 
 // Apply general API rate limiting
 app.use('/api/', apiLimiter);
->>>>>>> upstream
+
 
 // 2️⃣ Apply Helmet for baseline security headers
 app.use(helmet());
@@ -77,15 +76,10 @@ const { protect } = require("./middleware/authMiddleware");
 app.use("/api/auth", authRoutes);
 app.use("/api/payments", paymentRoutes);
 
-<<<<<<< HEAD
-// ✅ ADDITIONAL ROUTES
-
-=======
->>>>>>> upstream
 // Root API route
 app.get("/api", (req, res) => {
   res.json({
-    message: "Banking API Server is running! 🚀",
+    message: "Banking API Server is running!",
     timestamp: new Date(),
     endpoints: {
       auth: "/api/auth",
@@ -103,11 +97,7 @@ app.get("/health", (req, res) => {
   });
 });
 
-<<<<<<< HEAD
-// Test protected route (verify RBAC)
-=======
-// Test protected route
->>>>>>> upstream
+
 app.get("/api/protected", protect, (req, res) => {
   res.json({
     message: `Welcome, user ${req.user.id}!`,
@@ -117,11 +107,6 @@ app.get("/api/protected", protect, (req, res) => {
   });
 });
 
-<<<<<<< HEAD
-// Admin-only route
-=======
-// Test admin-only route
->>>>>>> upstream
 app.get("/api/admin-only", protect, (req, res) => {
   if (!req.user) return res.status(401).json({ message: "Authentication required" });
   if (req.user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
@@ -132,9 +117,6 @@ app.get("/api/admin-only", protect, (req, res) => {
   });
 });
 
-<<<<<<< HEAD
+
 // Export app for server.js
 module.exports = app;
-=======
-module.exports = app;
->>>>>>> upstream

@@ -21,8 +21,9 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('Connected to MongoDB');
 
-   app.listen(PORT, HOST, () => {
-      console.log(`Server running at http://${HOST}:${PORT}`);
+    // Proper HTTPS server
+    https.createServer(sslOptions, app).listen(PORT, HOST, () => {
+      console.log(`Server running securely at https://${HOST}:${PORT}`);
     });
   })
   .catch(err => {
