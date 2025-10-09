@@ -12,32 +12,32 @@ jobs:
           command: |
             pwd
             ls -la
-            echo "---- Backend ----"
-            ls -la Backend
+            echo "---- backend ----"
+            ls -la backend
 
       - restore_cache:
           keys:
-            - node-deps-{{ checksum "Backend/package-lock.json" }}
+            - node-deps-{{ checksum "backend/package-lock.json" }}
             - node-deps-
 
       - run:
           name: Install Dependencies (with verbose logging)
           command: |
-            cd Backend
+            cd backend
             npm ci --verbose || npm install --verbose
 
       - save_cache:
-          key: node-deps-{{ checksum "Backend/package-lock.json" }}
+          key: node-deps-{{ checksum "backend/package-lock.json" }}
           paths:
             - ~/.npm
 
       - run:
           name: Run ESLint
-          command: cd Backend && npx eslint . --ext .js,.jsx,.ts,.tsx || true
+          command: cd backend && npx eslint . --ext .js,.jsx,.ts,.tsx || true
 
       - run:
           name: Run Jest Tests
-          command: cd Backend && npm test -- --ci --reporters=default
+          command: cd backend && npm test -- --ci --reporters=default
 
 workflows:
   version: 2
