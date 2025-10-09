@@ -1,26 +1,102 @@
 version: 2.1
 
-jobs:
-  build-and-run:
+executors:
+  node_executor:
     docker:
-      - image: cimg/node:22.8  # Node.js Docker image
+      - image: cimg/node:22.0
+    resource_class: medium
+
+  base_docker:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium
+
+jobs:
+  lint_and_test:
+    executor: node_executor
     steps:
-      - checkout  # Checkout your code
+      - checkout
 
-      # Install dependencies
+      - restore_cache:
+          keys:
+            - v1-npm-{{ arch }}-{{ checksum "package-lock.json" }}
+            - v1-npm-{{ arch }}
+            - v1-npm-
       - run:
-          name: Install Dependencies
-          command: |
-            npm ci
+          name: Install dependencies
+          command: npm ci
+      - save_cache:
+          key: v1-npm-{{ arch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
 
-      # Start the application
       - run:
-          name: Start Application
+          name: Sanity check required env
           command: |
-            npm run start
+            test -n "$MONGO_URI" || { echo "MONGO_URI is NOT set"; exit 1; }
+            test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
+            echo "Env OK"
+
+      - run:
+          name: Run ESLint
+          command: npm run lint
+
+      - run:
+          name: Run tests
+          command: npm test
+
+  docker_build_and_healthcheck:
+    executor: base_docker
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Build Docker image
+          command: |
+            IMAGE_NAME="${IMAGE_NAME:-bankingapp-backend}"
+            docker build -t "$IMAGE_NAME:$CIRCLE_SHA1" .
+
+      - run:
+          name: Run container and wait for healthy
+          command: |
+            IMAGE_NAME="${IMAGE_NAME:-bankingapp-backend}"
+            test -n "$MONGO_URI" || { echo "MONGO_URI is NOT set"; exit 1; }
+            test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
+
+            docker run -d --name bankingapp \
+              -e NODE_ENV=production \
+              -e PORT=3000 \
+              -e MONGO_URI="$DB_URL" \
+              -e JWT_SECRET="$JWT_SECRET" \
+              "$IMAGE_NAME:$CIRCLE_SHA1"
+
+            for i in {1..60}; do
+              STATUS="$(docker inspect --format='{{.State.Health.Status}}' bankingapp 2>/dev/null || echo starting)"
+              echo "Container health: $STATUS"
+              [ "$STATUS" = "healthy" ] && echo "Healthy" && break
+              sleep 2
+            done
+
+            [ "$(docker inspect --format='{{.State.Health.Status}}' bankingapp 2>/dev/null || echo unhealthy)" = "healthy" ] || {
+              echo "Container failed to become healthy"
+              echo "---- Logs ----"
+              docker logs --tail=200 bankingapp || true
+              exit 1
+            }
+
+      - run:
+          name: Cleanup
+          when: always
+          command: docker rm -f bankingapp || true
 
 workflows:
-  version: 2
-  trigger_pipeline:
+  bankingapp:
     jobs:
-      - build-and-run
+      - lint_and_test
+      - docker_build_and_healthcheck:
+          requires:
+            - lint_and_test
+          filters:
+            branches:
+              only: main
