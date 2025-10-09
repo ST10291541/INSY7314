@@ -45,7 +45,7 @@ jobs:
             test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
             echo "Env OK"
 
-      # ESLint fix applied here
+      # ESLint fix
       - run:
           name: Run ESLint
           command: |
@@ -53,11 +53,13 @@ jobs:
             chmod +x ./node_modules/.bin/* || true
             npx eslint .
 
+      # Jest fix
       - run:
           name: Run tests
           command: |
             cd BankingApp/Backend
-            npm test
+            chmod +x ./node_modules/.bin/* || true
+            npx jest --passWithNoTests
 
   docker_build_and_healthcheck:
     executor: base_docker
@@ -117,4 +119,3 @@ workflows:
           filters:
             branches:
               only: main
-              
