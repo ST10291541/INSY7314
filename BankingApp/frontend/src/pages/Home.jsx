@@ -15,11 +15,10 @@ const Home = () => {
           {/* Only show buttons if no user is logged in */}
           {!user && (
             <>
-              <Link to="/register" className="btn btn-primary">
+              <Link
+                to="/register"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200">
                 Open Account
-              </Link>
-              <Link to="/login" className="btn btn-secondary">
-                Customer Login
               </Link>
             </>
           )}
