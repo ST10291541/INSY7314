@@ -17,11 +17,12 @@ const generateToken = (user) =>
 const HARDCODED_EMPLOYEE = {
   email: "employee@bank.com",
   password: "employee123!",
-  id: "hardcoded-employee-id-12345",
+  _id: "hardcoded-employee-id-12345",
   fullName: "Bank Employee",
   role: "employee",
   employeeId: "EMP001",
-  department: "Payments"
+  department: "Payments",
+  accountNumber: null
 };
 
 // Customer registration
