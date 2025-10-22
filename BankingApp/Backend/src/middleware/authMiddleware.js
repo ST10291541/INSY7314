@@ -1,5 +1,15 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User"); // make sure path is correct
+const User = require("../models/User");
+
+// HARDCODED EMPLOYEE - same as in authController
+const HARDCODED_EMPLOYEE = {
+  _id: "667eea1234567890abcdef",
+  email: "employee@banking.com",
+  role: "employee",
+  accountNumber: null,
+  fullName: "Manager",
+  employeeId: "EMP001"
+};
 
 const protect = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -12,7 +22,14 @@ const protect = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Fetch full user info from DB
+    // CHECK IF THIS IS THE HARDCODED EMPLOYEE
+    if (decoded.id === HARDCODED_EMPLOYEE._id) {
+      console.log('✅ Using hardcoded employee');
+      req.user = HARDCODED_EMPLOYEE;
+      return next();
+    }
+    
+    // REGULAR USER - lookup in database
     const user = await User.findById(decoded.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
 

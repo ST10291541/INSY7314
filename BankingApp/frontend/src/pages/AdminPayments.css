@@ -24,6 +24,50 @@
   font-weight: bold;
 }
 
+/* Status Summary */
+.status-summary {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 8px;
+  min-width: 80px;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.summary-item .count {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.summary-item .label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.summary-item.pending .count { color: #f39c12; }
+.summary-item.pending { border: 2px solid #f39c12; }
+
+.summary-item.verified .count { color: #27ae60; }
+.summary-item.verified { border: 2px solid #27ae60; }
+
+.summary-item.rejected .count { color: #e74c3c; }
+.summary-item.rejected { border: 2px solid #e74c3c; }
+
+.summary-item.total .count { color: #3498db; }
+.summary-item.total { border: 2px solid #3498db; }
+
 .payments-table-container {
   overflow-x: auto;
   margin-top: 1rem;
@@ -146,7 +190,110 @@
   font-size: 0.9rem;
 }
 
-/* Responsive design */
+/* Processing state */
+.actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Enhanced status badges */
+.status.verified {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status.rejected {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.status.completed {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.status.submitted {
+  background: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+.payments-count {
+  text-align: center;
+  font-weight: bold;
+  color: #667eea;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.retry-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.retry-btn:hover {
+  background: #556cd6;
+}
+
+.swift-code {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  background: #f0f4ff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #667eea;
+}
+
+.reference-info {
+  font-size: 0.85rem;
+  max-width: 150px;
+}
+
+.reference-info small {
+  color: #666;
+  word-break: break-word;
+}
+
+.customer-info, .payee-info, .bank-info {
+  font-size: 0.9rem;
+}
+
+.customer-info strong, .payee-info strong, .bank-info strong {
+  color: #333;
+}
+
+.customer-info small, .payee-info small {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.amount-cell {
+  font-weight: bold;
+  color: #2c5aa0;
+}
+
+/* Make table more compact for better data display */
+.payments-table td {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.payments-table th {
+  padding: 1rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Responsive design - MOVED TO BOTTOM */
 @media (max-width: 768px) {
   .admin-payments-container {
     margin: 1rem;
@@ -168,5 +315,23 @@
   .approve-btn, .reject-btn {
     margin: 0;
     width: 100%;
+  }
+
+ 
+  .status-summary {
+    gap: 0.5rem;
+  }
+  
+  .summary-item {
+    min-width: 70px;
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .summary-item .count {
+    font-size: 1.25rem;
+  }
+  
+  .summary-item .label {
+    font-size: 0.75rem;
   }
 }

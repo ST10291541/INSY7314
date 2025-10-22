@@ -13,13 +13,13 @@ const generateToken = (user) =>
     { expiresIn: "24h" }
   );
 
-// ✅ HARDCODED EMPLOYEE CREDENTIALS (No admin needed)
+// ✅  HARDCODED EMPLOYEE
 const HARDCODED_EMPLOYEE = {
-  email: "employee@bank.com",
-  password: "employee123!",
-  _id: "hardcoded-employee-id-12345",
-  fullName: "Bank Employee",
-  role: "employee",
+  _id: "667eea1234567890abcdef", 
+  email: "employee@banking.com",
+  password: "employee1234!",
+  fullName: "Manager",
+  role: "employee", 
   employeeId: "EMP001",
   department: "Payments",
   accountNumber: null
@@ -63,13 +63,13 @@ exports.login = async (req, res) => {
     
     const userIdentifier = email || login;
     
-    // ✅ HARDCODED EMPLOYEE CHECK
     if (userIdentifier === HARDCODED_EMPLOYEE.email && password === HARDCODED_EMPLOYEE.password) {
       const token = generateToken(HARDCODED_EMPLOYEE);
+      
       return res.json({ 
         token,
         user: { 
-          id: HARDCODED_EMPLOYEE.id,
+          id: HARDCODED_EMPLOYEE._id,
           email: HARDCODED_EMPLOYEE.email,
           role: HARDCODED_EMPLOYEE.role,
           fullName: HARDCODED_EMPLOYEE.fullName,
@@ -102,4 +102,3 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-

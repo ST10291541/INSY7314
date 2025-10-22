@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import './EmployeePortal.css';
 
 const EmployeePortal = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');

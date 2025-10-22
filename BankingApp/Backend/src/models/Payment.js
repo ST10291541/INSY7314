@@ -2,15 +2,15 @@ const mongoose = require("mongoose");
 
 const paymentSchema = new mongoose.Schema({
   payerRef: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  payeeRef: { type: String, required: true }, // still holds the payee account number or ID
+  payeeRef: { type: String, required: true },
 
   // Payment details
   amount: { type: Number, required: true },
   currency: { type: String, required: true, default: "ZAR" },
   provider: { type: String, required: true, default: "SWIFT" },
 
-  // NEW FIELD — text entered by the payer
-  paymentReference: { type: String, required: true }, // e.g. "Order 123 payment"
+ 
+  paymentReference: { type: String, required: true },
 
   // Payee info
   payeeName: { type: String, required: true },
@@ -23,7 +23,13 @@ const paymentSchema = new mongoose.Schema({
     enum: ["pending", "verified", "submitted", "completed", "rejected"],
     default: "pending"
   },
-  verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  
+  // Allow both ObjectId and String for hardcoded employees
+  verifiedBy: { 
+    type: mongoose.Schema.Types.Mixed, // Allows both ObjectId and String
+    ref: "User" 
+  },
+  
   verifiedAt: { type: Date },
 }, { timestamps: true });
 

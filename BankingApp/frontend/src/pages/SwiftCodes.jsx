@@ -5,7 +5,7 @@ import './SwiftCodes.css';
 const SwiftCodes = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   
-  // Sample SWIFT codes data - in a real app this would come from an API
+  // Sample SWIFT codes data 
   const [swiftCodes] = useState([
     { bankName: 'Standard Bank of South Africa', swiftCode: 'SBZAZAJJ' },
     { bankName: 'First National Bank', swiftCode: 'FIRNZAJJ' },

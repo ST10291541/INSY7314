@@ -10,7 +10,7 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 // Create Express app
 const app = express();
 
-// 1️⃣ Parse JSON and CSP reports sent by the browser
+// Parse JSON and CSP reports sent by the browser
 app.use(express.json({ type: ['application/json', 'application/csp-report'] }));
 
 // TRUST PROXY for rate limiting (important if behind reverse proxy)
@@ -28,10 +28,10 @@ app.use(express.json());
 app.use('/api/', apiLimiter);
 
 
-// 2️⃣ Apply Helmet for baseline security headers
+// Apply Helmet for baseline security headers
 app.use(helmet());
 
-// 3️⃣ Content Security Policy (CSP) - strict configuration
+// Content Security Policy (CSP) - strict configuration
 const cspDirectives = {
   defaultSrc: ["'self'"],
   scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],     // ✅ allow trusted CDN
@@ -53,13 +53,13 @@ app.use(
   })
 );
 
-// 4️⃣ Route to receive CSP violation reports
+//  Route to receive CSP violation reports
 app.post("/csp-report", (req, res) => {
   console.log("🛡️ CSP Violation Report:", JSON.stringify(req.body, null, 2));
   res.sendStatus(204);
 });
 
-// 5️⃣ CORS configuration for frontend
+//  CORS configuration for frontend
 app.use(
   cors({
     origin: "https://localhost:5173", // React frontend URL
@@ -67,14 +67,16 @@ app.use(
   })
 );
 
-// 6️⃣ Import your auth routes and middleware
+//  Import your auth routes and middleware
 const authRoutes = require("./routes/authRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const adminRoutes = require('./routes/adminRoutes');
 const { protect } = require("./middleware/authMiddleware");
 
 // Auth routes
 app.use("/api/auth", authRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use('/api', adminRoutes);
 
 // Root API route
 app.get("/api", (req, res) => {
