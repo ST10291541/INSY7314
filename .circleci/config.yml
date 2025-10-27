@@ -45,7 +45,7 @@ jobs:
             test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
             echo "Env OK"
 
-      # ESLint fix
+      # ESLint
       - run:
           name: Run ESLint
           command: |
@@ -53,13 +53,26 @@ jobs:
             chmod +x ./node_modules/.bin/* || true
             npx eslint .
 
-      # Jest fix
+      # Jest
       - run:
           name: Run tests
           command: |
             cd BankingApp/Backend
             chmod +x ./node_modules/.bin/* || true
             npx jest --passWithNoTests
+
+      # SonarQube Analysis
+      - run:
+          name: Run SonarQube analysis
+          command: |
+            cd BankingApp/Backend
+            npm install -g sonarqube-scanner
+            sonar-scanner \
+              -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+              -Dsonar.organization="$ORGANIZATION" \
+              -Dsonar.host.url="https://sonarcloud.io" \
+              -Dsonar.login="$SONAR_TOKEN" \
+              -Dsonar.sources=.
 
   docker_build_and_healthcheck:
     executor: base_docker
@@ -119,4 +132,3 @@ workflows:
           filters:
             branches:
               only: main
-              
