@@ -34,10 +34,10 @@ app.use(helmet());
 // 3️⃣ Content Security Policy (CSP) - strict configuration
 const cspDirectives = {
   defaultSrc: ["'self'"],
-  scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],     // ✅ allow trusted CDN
-  styleSrc:  ["'self'"],                                 // ✅ only local styles
-  imgSrc:    ["'self'", "https://images.unsplash.com"],  // ✅ allow Unsplash images
-  connectSrc:["'self'", "https://api.github.com"],       // ✅ allow specific API
+  scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],     // allow trusted CDN
+  styleSrc:  ["'self'"],                                 // only local styles
+  imgSrc:    ["'self'", "https://images.unsplash.com"],  // allow Unsplash images
+  connectSrc:["'self'", "https://api.github.com"],       // allow specific API
   frameAncestors: ["'none'"],
 };
 
@@ -55,7 +55,7 @@ app.use(
 
 // 4️⃣ Route to receive CSP violation reports
 app.post("/csp-report", (req, res) => {
-  console.log("🛡️ CSP Violation Report:", JSON.stringify(req.body, null, 2));
+  console.log("CSP Violation Report:", JSON.stringify(req.body, null, 2));
   res.sendStatus(204);
 });
 
@@ -111,7 +111,7 @@ app.get("/api/admin-only", protect, (req, res) => {
   if (req.user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
 
   res.json({
-    message: "Admin access granted! ✅",
+    message: "Admin access granted!",
     user: req.user
   });
 });
