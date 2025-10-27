@@ -66,8 +66,8 @@ jobs:
           name: Run SonarQube analysis
           command: |
             cd BankingApp/Backend
-            npm install -g sonarqube-scanner
-            sonar-scanner \
+            npm install sonarqube-scanner --save-dev
+            npx sonar-scanner \
               -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
               -Dsonar.organization="$ORGANIZATION" \
               -Dsonar.host.url="https://sonarcloud.io" \
