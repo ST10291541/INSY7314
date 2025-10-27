@@ -92,10 +92,9 @@ app.get("/api", (req, res) => {
 });
 
 // Health check route for Docker
-app.get("/health", (req, res) => {
-  res.json({
-    status: "operational",
-    timestamp: new Date()
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    message: "Server is healthy"
   });
 });
 

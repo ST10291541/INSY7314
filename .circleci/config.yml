@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Use the latest 2.1 version of CircleCI pipeline process engine.
 # See: https://circleci.com/docs/reference/configuration-reference
 version: 2.1
@@ -21,3 +22,127 @@ workflows:
           version: '16.10'
           # If you are using yarn, change the line below from "npm" to "yarn"
           pkg-manager: npm
+=======
+version: 2.1
+
+executors:
+  node_executor:
+    docker:
+      - image: cimg/node:22.0
+    resource_class: medium
+
+  base_docker:
+    docker:
+      - image: cimg/base:stable
+    resource_class: medium
+
+jobs:
+  lint_and_test:
+    executor: node_executor
+    environment:
+      PORT: 5000
+      MONGO_URI: "mongodb+srv://st10248479:UPCgc0mCE17gX4zy@cluster0.bwpu2sh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+      JWT_SECRET: "supersecretjwtkey"
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-npm-backend-{{ checksum "BankingApp/Backend/package-lock.json" }}
+            - v1-npm-backend-
+
+      - run:
+          name: Install dependencies
+          command: |
+            cd BankingApp/Backend
+            npm ci
+
+      - save_cache:
+          key: v1-npm-backend-{{ checksum "BankingApp/Backend/package-lock.json" }}
+          paths:
+            - ~/.npm
+
+      - run:
+          name: Sanity check required env
+          command: |
+            cd BankingApp/Backend
+            test -n "$MONGO_URI" || { echo "MONGO_URI is NOT set"; exit 1; }
+            test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
+            echo "Env OK"
+
+      # ESLint fix
+      - run:
+          name: Run ESLint
+          command: |
+            cd BankingApp/Backend
+            chmod +x ./node_modules/.bin/* || true
+            npx eslint .
+
+      # Jest fix
+      - run:
+          name: Run tests
+          command: |
+            cd BankingApp/Backend
+            chmod +x ./node_modules/.bin/* || true
+            npx jest --passWithNoTests
+
+  docker_build_and_healthcheck:
+    executor: base_docker
+    environment:
+      PORT: 5000
+      MONGO_URI: "mongodb+srv://st10248479:UPCgc0mCE17gX4zy@cluster0.bwpu2sh.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+      JWT_SECRET: "supersecretjwtkey"
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Build Docker image
+          command: |
+            cd BankingApp/Backend
+            IMAGE_NAME="${IMAGE_NAME:-bankingapp-backend}"
+            docker build -t "$IMAGE_NAME:$CIRCLE_SHA1" .
+
+      - run:
+          name: Run container and wait for healthy
+          command: |
+            IMAGE_NAME="${IMAGE_NAME:-bankingapp-backend}"
+
+            docker run -d --name bankingapp \
+              -e NODE_ENV=production \
+              -e PORT="$PORT" \
+              -e MONGO_URI="$MONGO_URI" \
+              -e JWT_SECRET="$JWT_SECRET" \
+              "$IMAGE_NAME:$CIRCLE_SHA1"
+
+            for i in {1..60}; do
+              STATUS="$(docker inspect --format='{{.State.Health.Status}}' bankingapp 2>/dev/null || echo starting)"
+              echo "Container health: $STATUS"
+              [ "$STATUS" = "healthy" ] && echo "Healthy" && break
+              sleep 2
+            done
+
+            [ "$(docker inspect --format='{{.State.Health.Status}}' bankingapp 2>/dev/null || echo unhealthy)" = "healthy" ] || {
+              echo "Container failed to become healthy"
+              echo "---- Logs ----"
+              docker logs --tail=200 bankingapp || true
+              exit 1
+            }
+
+      - run:
+          name: Cleanup
+          when: always
+          command: docker rm -f bankingapp || true
+
+workflows:
+  bankingapp:
+    jobs:
+      - lint_and_test
+      - docker_build_and_healthcheck:
+          requires:
+            - lint_and_test
+          filters:
+            branches:
+              only: main
+              
+>>>>>>> bd3232bedb9cad56e7b4338b1b11aacdaca356cd
