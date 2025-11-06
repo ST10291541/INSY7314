@@ -11,6 +11,8 @@ import Logout from "./pages/Logout";
 import PaymentPage from "./pages/PaymentPage";
 import MyPayments from './pages/MyPayments';
 import PaymentDetails from './pages/PaymentDetails';
+import AdminPayments from './pages/AdminPayments';
+import SwiftCodes from './pages/SwiftCodes';
 import './App.css';
 
 function App() {
@@ -61,6 +63,22 @@ function App() {
             element={
               <ProtectedRoute requiredRole={['employee','admin']}>
                 <EmployeePortal />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/admin-payments" 
+            element={
+              <ProtectedRoute requiredRole={['employee','admin']}>
+                <AdminPayments />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/swift-codes" 
+            element={
+              <ProtectedRoute requiredRole={['employee','admin']}>
+                <SwiftCodes />
               </ProtectedRoute>
             } 
           />
