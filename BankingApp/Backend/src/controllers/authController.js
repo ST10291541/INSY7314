@@ -13,7 +13,7 @@ const generateToken = (user) =>
     { expiresIn: "24h" }
   );
 
-// ✅ HARDCODED EMPLOYEE CREDENTIALS (No admin needed)
+//HARDCODED EMPLOYEE CREDENTIALS (No admin needed)
 const HARDCODED_EMPLOYEE = {
   email: "employee@bank.com",
   password: "employee123!",
@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
     
     const userIdentifier = email || login;
     
-    // ✅ HARDCODED EMPLOYEE CHECK
+    // HARDCODED EMPLOYEE CHECK
     if (userIdentifier === HARDCODED_EMPLOYEE.email && password === HARDCODED_EMPLOYEE.password) {
       const token = generateToken(HARDCODED_EMPLOYEE);
       return res.json({ 
