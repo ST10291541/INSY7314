@@ -36,7 +36,16 @@ jobs:
       - run:
           name: Install backend dependencies
           working_directory: BankingApp/Backend
-          command: npm ci
+          command: |
+            echo "Checking package-lock.json..."
+            if [ ! -f package-lock.json ]; then
+              echo "package-lock.json missing, generating with npm install..."
+              npm install
+            else
+              echo "package-lock.json found, running clean install"
+              rm -rf node_modules
+              npm ci
+            fi
 
       - save_cache:
           key: v1-npm-backend-{{ checksum "BankingApp/Backend/package-lock.json" }}
