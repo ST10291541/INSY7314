@@ -27,10 +27,16 @@ jobs:
             - v1-npm-backend-
 
       - run:
-          name: Install dependencies
+          name: Verify working directory and files
           command: |
-            cd BankingApp/Backend
-            npm ci
+            pwd
+            ls -la
+            ls -la BankingApp/Backend
+
+      - run:
+          name: Install backend dependencies
+          working_directory: BankingApp/Backend
+          command: npm ci
 
       - save_cache:
           key: v1-npm-backend-{{ checksum "BankingApp/Backend/package-lock.json" }}
@@ -39,33 +45,30 @@ jobs:
 
       - run:
           name: Sanity check required env
+          working_directory: BankingApp/Backend
           command: |
-            cd BankingApp/Backend
             test -n "$MONGO_URI" || { echo "MONGO_URI is NOT set"; exit 1; }
             test -n "$JWT_SECRET" || { echo "JWT_SECRET is NOT set"; exit 1; }
-            echo "Env OK"
+            echo "Environment variables OK"
 
-      # ESLint
       - run:
           name: Run ESLint
+          working_directory: BankingApp/Backend
           command: |
-            cd BankingApp/Backend
             chmod +x ./node_modules/.bin/* || true
             npx eslint .
 
-      # Jest
       - run:
-          name: Run tests
+          name: Run Jest tests
+          working_directory: BankingApp/Backend
           command: |
-            cd BankingApp/Backend
             chmod +x ./node_modules/.bin/* || true
             npx jest --passWithNoTests
 
-      # SonarQube Analysis
       - run:
           name: Run SonarQube analysis
+          working_directory: BankingApp/Backend
           command: |
-            cd BankingApp/Backend
             npm install sonarqube-scanner --save-dev
             npx sonar-scanner \
               -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
@@ -86,8 +89,8 @@ jobs:
 
       - run:
           name: Build Docker image
+          working_directory: BankingApp/Backend
           command: |
-            cd BankingApp/Backend
             IMAGE_NAME="${IMAGE_NAME:-bankingapp-backend}"
             docker build -t "$IMAGE_NAME:$CIRCLE_SHA1" .
 
