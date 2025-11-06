@@ -10,19 +10,6 @@ const Home = () => {
       <div className="hero-section">
         <h1>Welcome to International Bank</h1>
         <p>Secure international payments made simple</p>
-        
-        <div className="cta-buttons">
-          {/* Only show buttons if no user is logged in */}
-          {!user && (
-            <>
-              <Link
-                to="/register"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200">
-                Open Account
-              </Link>
-            </>
-          )}
-        </div>
       </div>
 
       <div className="features-section">
