@@ -37,6 +37,12 @@
   border-bottom: 1px solid #eee;
 }
 
+.error-text {
+  color: red;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
 /* Button styling */
 .payment-details-container button {
   margin-top: 1.5rem;

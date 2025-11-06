@@ -11,6 +11,7 @@ const PaymentDetails = () => {
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
+  // Fetch payment details
   useEffect(() => {
     const fetchPayment = async () => {
       try {
@@ -30,12 +31,14 @@ const PaymentDetails = () => {
     fetchPayment();
   }, [id, user.token, navigate]);
 
+  // Update payment status
   const updateStatus = async (status) => {
     if (!window.confirm(`Are you sure you want to mark this payment as "${status}"?`)) return;
 
     try {
       setUpdatingStatus(true);
-      const res = await axios.patch(`https://localhost:5000/api/payments/${id}/status`, 
+      const res = await axios.patch(
+        `https://localhost:5000/api/payments/${id}/status`,
         { status },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
@@ -56,7 +59,7 @@ const PaymentDetails = () => {
     <div className="payment-details-container">
       <h1>Payment Details</h1>
 
-      {/* Payment & Payee Info */}
+      {/* Payment Info */}
       <div className="section">
         <h3>Payment Info</h3>
         <p><strong>Payee Name:</strong> {payment.payeeName}</p>
@@ -65,7 +68,18 @@ const PaymentDetails = () => {
         <p><strong>SWIFT Code:</strong> {payment.swiftCode}</p>
         <p><strong>Amount:</strong> {payment.amount} {payment.currency}</p>
         <p><strong>Provider:</strong> {payment.provider}</p>
-        <p><strong>Status:</strong> <span className={`status ${payment.status}`}>{payment.status}</span></p>
+
+        {/* Status with message if rejected */}
+        <p>
+          <strong>Status:</strong> 
+          <span className={`status ${payment.status}`}> {payment.status}</span>
+          {payment.status === 'rejected' && (
+            <span className="error-text">
+              {" "} - Incorrect SWIFT code. Please contact your bank for the correct one.
+            </span>
+          )}
+        </p>
+        
         <p><strong>Created At:</strong> {new Date(payment.createdAt).toLocaleString()}</p>
       </div>
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import './SwiftCodes.css';
 
@@ -40,8 +39,9 @@ const SwiftCodes = () => {
   return (
     <div className="swift-codes-container">
       <h1>SWIFT Codes Directory</h1>
-      <p>Welcome, {user.fullName} ({user.role})</p>
-      
+
+      {/* Helpful context if user is redirected due to a rejected payment */}      
+      {/* Search Section */}
       <div className="search-section">
         <input
           type="text"
@@ -52,6 +52,7 @@ const SwiftCodes = () => {
         />
       </div>
 
+      {/* SWIFT Codes Table */}
       <div className="swift-codes-table-container">
         <table className="swift-codes-table">
           <thead>
@@ -79,9 +80,10 @@ const SwiftCodes = () => {
         </table>
       </div>
 
+      {/* Extra Info */}
       <div className="swift-codes-info">
         <p><strong>Total SWIFT Codes:</strong> {filteredSwiftCodes.length}</p>
-        <p><em>SWIFT codes are used for international wire transfers between banks.</em></p>
+        <p><em>SWIFT codes are required for international money transfers between banks.</em></p>
       </div>
     </div>
   );
